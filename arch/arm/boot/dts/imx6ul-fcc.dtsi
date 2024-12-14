@@ -43,11 +43,11 @@
 		regulator-name = "VSD_3V3";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-		gpio = <&gpio1 9 GPIO_ACTIVE_HIGH>;
+		/* gpio = <&gpio1 9 GPIO_ACTIVE_HIGH>; */
 		off-on-delay-us = <20000>;
 		enable-active-high;
 	};
-
+    
 	/*
 	reg_can_3v3: regulator-can-3v3 {
 		compatible = "regulator-fixed";
@@ -155,6 +155,15 @@
 			spi-max-frequency = <100000>;
 		};
 	};
+
+	gpioled {
+		compatible = "fcc,gpioled";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_gpioled>;
+		led-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
+		status = "okay";
+
+	};
 };
 
 &clks {
@@ -206,6 +215,18 @@
 			};
 		};
 	};
+
+    /* FT5406/FT5426 */
+    gt9147:gt9147@14 {
+        compatible = "goodix,gt9xx";
+        reg = <0x14>;
+        pinctrl-names = "default";
+        pinctrl-0 = <&pinctrl_tsc>;
+        interrupt-parent = <&gpio1>;
+        interrupts = <9 0>;
+        reset-gpios = <&gpio5 9 GPIO_ACTIVE_LOW>;
+        interrupt-gpios = <&gpio1 9 GPIO_ACTIVE_LOW>;
+    };
 };
 
 &fec1 {
@@ -472,6 +493,13 @@
 			MX6ULL_PAD_SNVS_TAMPER8__GPIO5_IO08  0x10B0    /* ENET2 NRST */
 		>;
 	};
+
+    /* 触摸屏复位引脚使用的是 SNVS_TAMPER9 
+    pinctrl_tsc_reset: tsc_reset {
+        fsl,pins = <
+            MX6ULL_PAD_SNVS_TAMPER9__GPIO5_IO09 0x79
+        >;
+    };*/
 };
 
 &iomuxc {
@@ -491,6 +519,12 @@
 			MX6UL_PAD_CSI_DATA05__CSI_DATA07	0x1b088
 			MX6UL_PAD_CSI_DATA06__CSI_DATA08	0x1b088
 			MX6UL_PAD_CSI_DATA07__CSI_DATA09	0x1b088
+		>;
+	};
+
+	pinctrl_gpioled: ledgrp {
+		fsl,pins = <
+			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03	0x10b0
 		>;
 	};
 
@@ -586,7 +620,7 @@
 			MX6UL_PAD_LCD_HSYNC__LCDIF_HSYNC    0x79
 			MX6UL_PAD_LCD_VSYNC__LCDIF_VSYNC    0x79
 			/* used for lcd reset */
-			MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09  0x79
+			/* MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09  0x79 */
 		>;
 	};
 
@@ -637,13 +671,14 @@
 			MX6UL_PAD_SNVS_TAMPER8__GPIO5_IO08	0x80000000 */
 		>;
 	};
-
+    /* 触摸屏的中断引脚信息 */
 	pinctrl_tsc: tscgrp {
 		fsl,pins = <
-			MX6UL_PAD_GPIO1_IO01__GPIO1_IO01		0xb0
-			MX6UL_PAD_GPIO1_IO02__GPIO1_IO02		0xb0
-			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03		0xb0
-			MX6UL_PAD_GPIO1_IO04__GPIO1_IO04		0xb0
+			MX6UL_PAD_GPIO1_IO09__GPIO1_IO09		0x10B0
+            MX6ULL_PAD_SNVS_TAMPER9__GPIO5_IO09     0x10B0
+			/* MX6UL_PAD_GPIO1_IO02__GPIO1_IO02		0xb0
+			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03		0xb0 
+			MX6UL_PAD_GPIO1_IO04__GPIO1_IO04		0xb0 */
 		>;
 	};
 
@@ -688,7 +723,7 @@
 			MX6UL_PAD_SD1_DATA3__USDHC1_DATA3 	0x17059
 			MX6UL_PAD_UART1_RTS_B__GPIO1_IO19       0x17059 /* SD1 CD */
 			MX6UL_PAD_GPIO1_IO05__USDHC1_VSELECT    0x17059 /* SD1 VSELECT */
-			MX6UL_PAD_GPIO1_IO09__GPIO1_IO09        0x17059 /* SD1 RESET */
+			/* MX6UL_PAD_GPIO1_IO09__GPIO1_IO09        0x17059 SD1 RESET */
 		>;
 	};
 

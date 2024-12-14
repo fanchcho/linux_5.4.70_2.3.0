@@ -384,7 +384,7 @@ ifeq ($(ARCH),sh64)
        SRCARCH := sh
 endif
 
-CROSS_COMPILE ?= /usr/local/arm/gcc-linaro-11.3.1-2022.06-aarch64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+CROSS_COMPILE ?= /usr/local/arm/gcc-arm-9.2-2019.12-aarch64-arm-none-linux-gnueabihf/bin/arm-none-linux-gnueabihf-
 
 KCONFIG_CONFIG	?= .config
 export KCONFIG_CONFIG
