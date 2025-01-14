@@ -48,7 +48,6 @@
 		enable-active-high;
 	};
     
-	/*
 	reg_can_3v3: regulator-can-3v3 {
 		compatible = "regulator-fixed";
 		regulator-name = "can-3v3";
@@ -56,7 +55,6 @@
 		regulator-max-microvolt = <3300000>;
 		gpios = <&gpio_spi 3 GPIO_ACTIVE_LOW>;
 	};
-	*/
 
 	sound {
 		compatible = "simple-audio-card";
@@ -152,17 +150,34 @@
 			reg = <0>;
 			registers-number = <1>;
 			registers-default = /bits/ 8 <0x57>;
-			spi-max-frequency = <100000>;
+			spi-max-frequency 
+            = <100000>;
 		};
 	};
 
-	gpioled {
-		compatible = "fcc,gpioled";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_gpioled>;
-		led-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
-		status = "okay";
 
+    dtsleds {
+		compatible = "gpio-leds";
+
+        led0 {
+            label = "red";
+            gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
+            linux,default-trigger = "heartbeat";
+            default-state = "on";
+        };
+	};
+
+    gpio-keys {
+		compatible = "gpio-keys";
+        #address-cells = <1>;
+        #size-cells = <0>;
+        autorepeat;
+
+        key0 {
+            label = "GPIO Key Enter";
+            linux,code = <KEY_ENTER>;
+            gpios = <&gpio1 18 GPIO_ACTIVE_LOW>;
+        };
 	};
 };
 
@@ -273,16 +288,16 @@
 &can1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1>;
-	/* xceiver-supply = <&reg_can_3v3>;*/
+	xceiver-supply = <&reg_can_3v3>;
 	status = "okay";
 };
 
-&can2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_flexcan2>;
-	/* xceiver-supply = <&reg_can_3v3>;*/
-	status = "okay";
-};
+// &can2 {
+// 	pinctrl-names = "default";
+// 	pinctrl-0 = <&pinctrl_flexcan2>;
+// 	/* xceiver-supply = <&reg_can_3v3>;*/
+// 	status = "okay";
+// };
 
 &i2c1 {
 	clock-frequency = <100000>;
@@ -290,18 +305,38 @@
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
 
-	mag3110@e {
-		compatible = "fsl,mag3110";
-		reg = <0x0e>;
-		position = <2>;
+	ap3216c@1e {
+		compatible = "alienk,ap3216c";
+		reg = <0x1e>;
 	};
 
-	fxls8471@1e {
-		compatible = "fsl,fxls8471";
-		reg = <0x1e>;
-		position = <0>;
-		interrupt-parent = <&gpio5>;
-		interrupts = <0 8>;
+	// mag3110@e {
+	// 	compatible = "fsl,mag3110";
+	// 	reg = <0x0e>;
+	// 	position = <2>;
+	// };
+
+	// fxls8471@1e {
+	// 	compatible = "fsl,fxls8471";
+	// 	reg = <0x1e>;
+	// 	position = <0>;
+	// 	interrupt-parent = <&gpio5>;
+	// 	interrupts = <0 8>;
+	// };
+};
+
+
+&ecspi3 {
+    fsl,spi-num-chipselects = <1>;
+	cs-gpios = <&gpio1 20 GPIO_ACTIVE_LOW>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi3>;
+	status = "okay";
+
+	spidev: icm20608@0 {
+		compatible = "alientek,icm20608";
+		spi-max-frequency = <8000000>;
+		reg = <0>;
 	};
 };
 
@@ -405,7 +440,7 @@
 &tsc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_tsc>;
-	xnur-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
+	// xnur-gpio = <&gpio1 3 GPIO_ACTIVE_LOW>;
 	measure-delay-time = <0xffff>;
 	pre-charge-time = <0xfff>;
 	status = "okay";
@@ -417,13 +452,19 @@
 	status = "okay";
 };
 
-&uart2 {
+// &uart2 {
+// 	pinctrl-names = "default";
+// 	pinctrl-0 = <&pinctrl_uart2>;
+// 	uart-has-rtscts;
+// 	/* for DTE mode, add below change */
+// 	/* fsl,dte-mode; */
+// 	/* pinctrl-0 = <&pinctrl_uart2dte>; */
+// 	status = "okay";
+// };
+
+&uart3 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart2>;
-	uart-has-rtscts;
-	/* for DTE mode, add below change */
-	/* fsl,dte-mode; */
-	/* pinctrl-0 = <&pinctrl_uart2dte>; */
+	pinctrl-0 = <&pinctrl_uart3>;
 	status = "okay";
 };
 
@@ -519,12 +560,6 @@
 			MX6UL_PAD_CSI_DATA05__CSI_DATA07	0x1b088
 			MX6UL_PAD_CSI_DATA06__CSI_DATA08	0x1b088
 			MX6UL_PAD_CSI_DATA07__CSI_DATA09	0x1b088
-		>;
-	};
-
-	pinctrl_gpioled: ledgrp {
-		fsl,pins = <
-			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03	0x10b0
 		>;
 	};
 
@@ -663,6 +698,15 @@
 		>;
 	};
 
+    pinctrl_ecspi3: icm20608 {
+        fsl,pins = <
+            MX6UL_PAD_UART2_TX_DATA__GPIO1_IO20	    0x10b0   /* CS */
+            MX6UL_PAD_UART2_RX_DATA__ECSPI3_SCLK	0x10b1   /* SCLK */
+            MX6UL_PAD_UART2_RTS_B__ECSPI3_MISO	    0x10b1   /* MISO */
+            MX6UL_PAD_UART2_CTS_B__ECSPI3_MOSI		0x10b1   /* MOSI */
+        >;
+    };
+
 	pinctrl_spi4: spi4grp {
 		fsl,pins = <
 			MX6UL_PAD_BOOT_MODE0__GPIO5_IO10	0x70a1
@@ -704,6 +748,13 @@
 			MX6UL_PAD_UART2_RX_DATA__UART2_DTE_TX	0x1b0b1
 			MX6UL_PAD_UART3_RX_DATA__UART2_DTE_CTS	0x1b0b1
 			MX6UL_PAD_UART3_TX_DATA__UART2_DTE_RTS	0x1b0b1
+		>;
+	};
+
+	pinctrl_uart3: uart3grp {
+		fsl,pins = <
+			MX6UL_PAD_UART3_TX_DATA__UART3_DCE_TX	0x1b0b1
+			MX6UL_PAD_UART3_RX_DATA__UART3_DCE_RX	0x1b0b1
 		>;
 	};
 
