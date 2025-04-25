@@ -1,0 +1,10 @@
+config ALIENTEK_AP3216C
+	    tristate "AP3216C Device"  
+    help
+This module will be compiled into kernel and use ap3216c.
+
+config ALIENTEK_GT9147
+        tristate "GT9147 I2C Touchscreen"
+        depends on I2C
+    help
+This module will be compiled into kernel and use GT9147.

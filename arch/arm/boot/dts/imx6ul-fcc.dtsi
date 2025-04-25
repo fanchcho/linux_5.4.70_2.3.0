@@ -245,7 +245,8 @@
 
     /* FT5406/FT5426 */
     gt9147:gt9147@14 {
-        compatible = "goodix,gt9xx";
+        compatible = "goodix,gt9147";
+        // , "goodix,gt9xx";
         reg = <0x14>;
         pinctrl-names = "default";
         pinctrl-0 = <&pinctrl_tsc &pinctrl_tsc_reset>;
@@ -334,7 +335,7 @@
 	status = "okay";
 
 	ap3216c@1e {
-		compatible = "alienk,ap3216c";
+		compatible = "alientek,ap3216c";
 		reg = <0x1e>;
 	};
 
@@ -585,7 +586,7 @@
     // 触摸屏复位引脚使用的是 SNVS_TAMPER9 
     pinctrl_tsc_reset: tsc_reset {
         fsl,pins = <
-            MX6ULL_PAD_SNVS_TAMPER9__GPIO5_IO09 0x10B0
+            MX6ULL_PAD_SNVS_TAMPER9__GPIO5_IO09 0x10B0  /* TSC_RST */
         >;
     };
 };
@@ -757,12 +758,12 @@
 
 	pinctrl_sim2: sim2grp {
 		fsl,pins = <
-			MX6UL_PAD_CSI_DATA03__SIM2_PORT1_PD		0xb808
+			MX6UL_PAD_CSI_DATA03__SIM2_PORT1_PD		    0xb808
 			MX6UL_PAD_CSI_DATA04__SIM2_PORT1_CLK		0x31
 			MX6UL_PAD_CSI_DATA05__SIM2_PORT1_RST_B		0xb808
 			MX6UL_PAD_CSI_DATA06__SIM2_PORT1_SVEN		0xb808
 			MX6UL_PAD_CSI_DATA07__SIM2_PORT1_TRXD		0xb809
-			MX6UL_PAD_CSI_DATA02__GPIO4_IO23		0x3008
+			MX6UL_PAD_CSI_DATA02__GPIO4_IO23		    0x3008
 		>;
 	};
 
@@ -787,7 +788,7 @@
 
 	pinctrl_tsc: tscgrp {
 		fsl,pins = <
-			MX6UL_PAD_GPIO1_IO09__GPIO1_IO09		0xF080
+			MX6UL_PAD_GPIO1_IO09__GPIO1_IO09		0x10B0      /* TSC_INT */
             /* MX6ULL_PAD_SNVS_TAMPER9__GPIO5_IO09     0x10B0
 			MX6UL_PAD_GPIO1_IO02__GPIO1_IO02		0xb0
 			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03		0xb0 
@@ -835,12 +836,12 @@
 
 	pinctrl_usdhc1: usdhc1grp {
 		fsl,pins = <
-			MX6UL_PAD_SD1_CMD__USDHC1_CMD     	0x17059
-			MX6UL_PAD_SD1_CLK__USDHC1_CLK		0x10071
-			MX6UL_PAD_SD1_DATA0__USDHC1_DATA0 	0x17059
-			MX6UL_PAD_SD1_DATA1__USDHC1_DATA1 	0x17059
-			MX6UL_PAD_SD1_DATA2__USDHC1_DATA2 	0x17059
-			MX6UL_PAD_SD1_DATA3__USDHC1_DATA3 	0x17059
+			MX6UL_PAD_SD1_CMD__USDHC1_CMD     	    0x17059
+			MX6UL_PAD_SD1_CLK__USDHC1_CLK		    0x10071
+			MX6UL_PAD_SD1_DATA0__USDHC1_DATA0 	    0x17059
+			MX6UL_PAD_SD1_DATA1__USDHC1_DATA1 	    0x17059
+			MX6UL_PAD_SD1_DATA2__USDHC1_DATA2 	    0x17059
+			MX6UL_PAD_SD1_DATA3__USDHC1_DATA3 	    0x17059
 			MX6UL_PAD_UART1_RTS_B__GPIO1_IO19       0x17059 /* SD1 CD */
 			MX6UL_PAD_GPIO1_IO05__USDHC1_VSELECT    0x17059 /* SD1 VSELECT */
 			/* MX6UL_PAD_GPIO1_IO09__GPIO1_IO09        0x17059 SD1 RESET */
